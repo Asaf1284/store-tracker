@@ -1,11 +1,9 @@
 import os
 import json
 import requests
-from bs4 import BeautifulSoup
 
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 
-# Load items from items.json
 try:
     with open("items.json", "r") as f:
         TARGET_ITEMS = json.load(f)
@@ -50,14 +48,20 @@ def check_stock():
             res = requests.get(url, headers=HEADERS, timeout=15)
             if res.status_code == 200:
                 html = res.text.lower()
-                # If the out-of-stock phrase is gone, it means it's available!
+
+                # Anti-bot / CAPTCHA guard for Walmart
+                if "robot or human" in html or "blocked" in html:
+                    print(f"[-] Blocked by anti-bot page on {name}, skipping.")
+                    continue
+
+                # If out-of-stock phrase is gone, trigger restock alert
                 if out_of_stock_text not in html:
                     print(f"[!] {name} IS IN STOCK!")
                     notify_discord(name, url)
                 else:
                     print(f"[*] {name} still out of stock.")
             else:
-                print(f"[-] Blocked or bad status code for {name}: {res.status_code}")
+                print(f"[-] Status code {res.status_code} for {name}")
         except Exception as e:
             print(f"[-] Error checking {name}: {e}")
 
