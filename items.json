@@ -5,3 +5,11 @@
     "out_of_stock_text": "Out of stock"
   }
 ]
+
+[
+  {
+    "name": "Huggy Wuggy youtooz",
+    "url": "https://youtooz.com/products/huggy-wuggy",
+    "out_of_stock_text": "Sold out!"
+  }
+]
